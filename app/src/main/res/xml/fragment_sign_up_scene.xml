@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint android:id="@+id/imageView"
+            android:layout_width="220dp"
+            android:layout_height="140dp"
+            android:layout_marginTop="64dp"
+            app:layout_constraintBottom_toTopOf="@id/textView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread"/>
+        <Constraint android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleX="1.0"
+            android:scaleY="1.0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            app:layout_constraintBottom_toTopOf="@id/nestedScrollView"/>
+        <Constraint android:id="@+id/nestedScrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView"/>
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint android:id="@id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toStartOf="@id/textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <Constraint android:id="@+id/textView"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            app:layout_constraintStart_toEndOf="@id/imageView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        <Constraint android:id="@+id/nestedScrollView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView"/>
+    </ConstraintSet>
+
+    <Transition
+        app:constraintSetEnd="@id/end"
+        app:constraintSetStart="@+id/start"
+        app:motionInterpolator="bounce">
+        <KeyFrameSet >
+            <KeyAttribute
+                app:motionTarget="@+id/imageView"
+                app:framePosition="100"
+                android:translationY="0dp" />
+            <KeyAttribute
+                app:motionTarget="@+id/imageView"
+                app:framePosition="100"
+                android:translationX="0dp" />
+            <KeyAttribute
+                app:motionTarget="@+id/textView"
+                app:framePosition="100"
+                android:translationY="0dp" />
+            <KeyAttribute
+                app:motionTarget="@+id/textView"
+                app:framePosition="100"
+                android:translationX="0dp" />
+            <KeyAttribute
+                app:motionTarget="@id/nestedScrollView"
+                app:framePosition="100"
+                android:translationY="0dp"/>
+            <KeyAttribute />
+        </KeyFrameSet>
+
+        <OnSwipe
+            app:touchAnchorId="@id/nestedScrollView"
+            app:touchRegionId="@id/nestedScrollView"
+            app:dragDirection="dragUp"/>
+    </Transition>
+</MotionScene>
