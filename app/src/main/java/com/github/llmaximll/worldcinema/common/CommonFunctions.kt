@@ -1,4 +1,4 @@
-package com.github.llmaximll.worldcinema
+package com.github.llmaximll.worldcinema.common
 
 import android.content.Context
 import android.util.Log
@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.github.llmaximll.worldcinema.BuildConfig
 
 class CommonFunctions {
 

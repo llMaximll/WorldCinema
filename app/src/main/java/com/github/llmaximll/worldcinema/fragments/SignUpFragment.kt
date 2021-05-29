@@ -1,4 +1,4 @@
-package com.github.llmaximll.worldcinema
+package com.github.llmaximll.worldcinema.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import com.github.llmaximll.worldcinema.R
+import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.vm.SignUpVM
 
 class SignUpFragment : Fragment() {
 
@@ -59,6 +62,7 @@ class SignUpFragment : Fragment() {
             if (checkFields) {
                 //Сохранение состояния в SharedPreferences
                 //Переход в SignIn
+                viewModel.signUp(requireContext(), mail, password, name, secondName)
             }
         }
     }

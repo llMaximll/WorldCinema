@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#332973"
     app:layoutDescription="@xml/fragment_sign_up_scene"
-    tools:context=".SignUpFragment"
+    tools:context=".fragments.SignUpFragment"
     tools:showPaths="true">
 
     <ImageView

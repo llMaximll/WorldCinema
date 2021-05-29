@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.github.llmaximll.worldcinema.fragments.LaunchScreenFragment
+import com.github.llmaximll.worldcinema.fragments.SignUpFragment
 
 private const val TAG = "MainActivity"
 

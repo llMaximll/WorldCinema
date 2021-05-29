@@ -1,11 +1,30 @@
-package com.github.llmaximll.worldcinema
+package com.github.llmaximll.worldcinema.vm
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.repositories.CinemaRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SignUpVM : ViewModel() {
 
+    private val repository = CinemaRepository.get()
     private val commonFunctions = CommonFunctions()
+
+    fun signUp(context: Context, email: String, password: String, firstName: String, lastName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = repository.signUp(email, password, firstName, lastName)
+            withContext(Dispatchers.Main) {
+                if (response)
+                    commonFunctions.toast(context, "Регистрация успешна")
+                else
+                    commonFunctions.toast(context, "Ошибка при регистрации")
+            }
+        }
+    }
 
     fun checkFields(
         context: Context, name: String, secondName: String, mail: String,

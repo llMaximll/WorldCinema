@@ -1,4 +1,4 @@
-package com.github.llmaximll.worldcinema
+package com.github.llmaximll.worldcinema.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.github.llmaximll.worldcinema.R
+import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.vm.LaunchScreenVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect

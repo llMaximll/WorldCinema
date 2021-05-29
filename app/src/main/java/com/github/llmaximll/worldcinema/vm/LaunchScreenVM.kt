@@ -1,4 +1,4 @@
-package com.github.llmaximll.worldcinema
+package com.github.llmaximll.worldcinema.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

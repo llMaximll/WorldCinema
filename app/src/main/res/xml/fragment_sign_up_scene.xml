@@ -60,7 +60,7 @@
     <Transition
         app:constraintSetEnd="@id/end"
         app:constraintSetStart="@+id/start"
-        app:motionInterpolator="bounce">
+        app:motionInterpolator="easeInOut">
         <KeyFrameSet >
             <KeyAttribute
                 app:motionTarget="@+id/imageView"
