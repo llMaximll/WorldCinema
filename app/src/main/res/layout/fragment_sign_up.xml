@@ -141,7 +141,7 @@
                 android:inputType="textPassword"/>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/materialButton"
+                android:id="@+id/signUp_button"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="60dp"
@@ -155,20 +155,19 @@
                 tools:layout_editor_absoluteY="659dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/materialButton2"
+                android:id="@+id/signIn_button"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
                 android:text="У меня уже есть аккаунт"
                 android:textAllCaps="false"
                 android:textColor="#EF3A01"
                 android:textSize="18dp"
                 app:rippleColor="#EF3A01"
-                app:strokeColor="#AFAFAF"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="650dp" />
+                app:strokeColor="#AFAFAF"/>
 
         </LinearLayout>
 

@@ -1,11 +1,23 @@
 package com.github.llmaximll.worldcinema
 
+import android.content.Context
 import android.util.Log
+import android.view.Gravity
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 
 class CommonFunctions {
+
+    fun toast(context: Context?, message: String) {
+        val toast = Toast.makeText(
+            context,
+            message,
+            Toast.LENGTH_LONG)
+        toast.setGravity(Gravity.TOP, 0, 0)
+        toast.show()
+    }
 
     fun log(tag: String, message: String) {
         if (BuildConfig.DEBUG) {
