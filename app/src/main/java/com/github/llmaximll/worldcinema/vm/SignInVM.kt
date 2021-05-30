@@ -11,27 +11,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private const val TAG = "SignUpVM"
+private const val TAG = "SignInVM"
 
-class SignUpVM : ViewModel() {
+class SignInVM : ViewModel() {
 
     private val repository = CinemaRepository.get()
     private val cf = CommonFunctions.get()
     private val _signIn = MutableStateFlow(false)
     val signIn = _signIn.asStateFlow()
-
-    fun signUp(context: Context, email: String, password: String, firstName: String, lastName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.signUp(email, password, firstName, lastName)
-            withContext(Dispatchers.Main) {
-                if (response) {
-                    signIn(context, email, password)
-                }
-                else
-                    cf.toast(context, "Ошибка при регистрации")
-            }
-        }
-    }
 
     fun signIn(context: Context, email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -39,31 +26,19 @@ class SignUpVM : ViewModel() {
             withContext(Dispatchers.Main) {
                 if (response != null) {
                     _signIn.value = true
-                    cf.toast(context, "Регистрация успешна")
-                    cf.log(TAG, "Регистрация успешна | token=${response.token}")
+                    cf.toast(context, "Аутентификация успешна")
+                    cf.log(TAG, "Аутентификация успешна | token=${response.token}")
                 }
                 else
-                    cf.toast(context, "Регистрация успешна. " +
-                            "Ошибка при аутентификации")
+                    cf.toast(context, "Ошибка при аутентификации")
             }
         }
     }
 
-    fun checkFields(
-        context: Context, name: String, secondName: String, mail: String,
-        password: String, secondPassword: String
-    ): Boolean {
+    fun checkFields(context: Context, mail: String, password: String): Boolean {
         var checkFields = true
 
         when {
-            name == "" -> {
-                checkFields = false
-                cf.toast(context, "Поле \"Имя\" пустое")
-            }
-            secondName == "" -> {
-                checkFields = false
-                cf.toast(context, "Поле \"Фамилия\" пустое")
-            }
             mail == "" -> {
                 checkFields = false
                 cf.toast(context, "Поле \"E-mail\" пустое")
@@ -71,14 +46,6 @@ class SignUpVM : ViewModel() {
             password == "" -> {
                 checkFields = false
                 cf.toast(context, "Поле \"Пароль\" пустое")
-            }
-            secondPassword == "" -> {
-                checkFields = false
-                cf.toast(context, "Поле \"Повторите пароль\" пустое")
-            }
-            password != secondPassword -> {
-                checkFields = false
-                cf.toast(context, "Пароли не совпадают")
             }
             !checkMail(context, mail) -> checkFields = false
         }
@@ -97,7 +64,7 @@ class SignUpVM : ViewModel() {
             }
         }
         val illegalCharacters = charArrayOf('$', '!', '@', '#', '%', '^', '&', '*', '(', ')', '_', '-',
-        '+', '=', '|', '\\', '/', '`', '~', ',', '<', '>', '?', '№', ':', ';', '?', '\'', '\"')
+            '+', '=', '|', '\\', '/', '`', '~', ',', '<', '>', '?', '№', ':', ';', '?', '\'', '\"')
         if ((mail.substringBeforeLast("@")).any(illegalCharacters::contains) ||
             (mail.substringAfterLast("@")).any(illegalCharacters::contains)) {
             checkMail = false
