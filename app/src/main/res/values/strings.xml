@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WorldCinema</string>
+    <string name="shared_element_launch_screen_logo">launch_screen_logo</string>
 </resources>

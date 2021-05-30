@@ -15,7 +15,7 @@
         android:layout_height="140dp"
         android:layout_marginTop="64dp"
         android:src="@drawable/logo_foreground"
-        android:transitionName="tran"
+        android:transitionName="@string/shared_element_launch_screen_logo"
         app:layout_constraintBottom_toTopOf="@id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

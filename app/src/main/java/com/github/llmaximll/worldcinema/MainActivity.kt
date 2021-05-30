@@ -30,8 +30,12 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onLaunchScreenFragment(sharedElement1: View) {
-        val fragment = SignUpFragment.newInstance()
+    override fun onLaunchScreenFragment(fragmentNumber: Int, sharedElement1: View) {
+        val fragment = when (fragmentNumber) {
+            0 -> SignUpFragment.newInstance()
+            1 -> SignInFragment.newInstance()
+            else -> SignUpFragment.newInstance()
+        }
         //fragment transition
         fragment.sharedElementEnterTransition = TransitionInflater.from(this)
             .inflateTransition(android.R.transition.move)
@@ -40,7 +44,7 @@ class MainActivity : AppCompatActivity(),
 
         supportFragmentManager
             .beginTransaction()
-            .addSharedElement(sharedElement1, "tran")
+            .addSharedElement(sharedElement1, getString(R.string.shared_element_launch_screen_logo))
             .replace(R.id.container_fragment, fragment)
             .commit()
     }

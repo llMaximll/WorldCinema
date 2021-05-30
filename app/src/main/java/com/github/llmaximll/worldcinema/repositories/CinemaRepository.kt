@@ -15,7 +15,7 @@ private const val TAG = "CinemaRepository"
 
 class CinemaRepository private constructor(context: Context) {
 
-    private val commonFunctions = CommonFunctions()
+    private val commonFunctions = CommonFunctions.get()
 
     suspend fun signUp(email: String, password: String, firstName: String, lastName: String): Boolean {
         return suspendCoroutine { cont ->

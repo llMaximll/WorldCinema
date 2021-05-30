@@ -3,10 +3,9 @@
 
     <objectAnimator
         android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-        android:propertyName="y"
+        android:propertyName="alpha"
         android:valueType="floatType"
-        android:valueTo="2100"
-        android:valueFrom="0"
-        android:duration="1000"/>
+        android:valueTo="0.0"
+        android:duration="0"/>
 
 </set>

@@ -16,7 +16,7 @@ private const val TAG = "SignUpVM"
 class SignUpVM : ViewModel() {
 
     private val repository = CinemaRepository.get()
-    private val commonFunctions = CommonFunctions()
+    private val cf = CommonFunctions.get()
     private val _signIn = MutableStateFlow(false)
     val signIn = _signIn.asStateFlow()
 
@@ -28,7 +28,7 @@ class SignUpVM : ViewModel() {
                     signIn(context, email, password)
                 }
                 else
-                    commonFunctions.toast(context, "Ошибка при регистрации")
+                    cf.toast(context, "Ошибка при регистрации")
             }
         }
     }
@@ -39,12 +39,12 @@ class SignUpVM : ViewModel() {
             withContext(Dispatchers.Main) {
                 if (response != null) {
                     _signIn.value = true
-                    commonFunctions.toast(context, "Регистрация успешна | " +
+                    cf.toast(context, "Регистрация успешна | " +
                                 "token=${response.token}")
-                    commonFunctions.log(TAG, "Регистрация успешна | token=${response.token}")
+                    cf.log(TAG, "Регистрация успешна | token=${response.token}")
                 }
                 else
-                    commonFunctions.toast(context, "Регистрация успешна. " +
+                    cf.toast(context, "Регистрация успешна. " +
                             "Ошибка при аутентификации")
             }
         }
@@ -59,27 +59,27 @@ class SignUpVM : ViewModel() {
         when {
             name == "" -> {
                 checkFields = false
-                commonFunctions.toast(context, "Поле \"Имя\" пустое")
+                cf.toast(context, "Поле \"Имя\" пустое")
             }
             secondName == "" -> {
                 checkFields = false
-                commonFunctions.toast(context, "Поле \"Фамилия\" пустое")
+                cf.toast(context, "Поле \"Фамилия\" пустое")
             }
             mail == "" -> {
                 checkFields = false
-                commonFunctions.toast(context, "Поле \"E-mail\" пустое")
+                cf.toast(context, "Поле \"E-mail\" пустое")
             }
             password == "" -> {
                 checkFields = false
-                commonFunctions.toast(context, "Поле \"Пароль\" пустое")
+                cf.toast(context, "Поле \"Пароль\" пустое")
             }
             secondPassword == "" -> {
                 checkFields = false
-                commonFunctions.toast(context, "Поле \"Повторите пароль\" пустое")
+                cf.toast(context, "Поле \"Повторите пароль\" пустое")
             }
             password != secondPassword -> {
                 checkFields = false
-                commonFunctions.toast(context, "Пароли не совпадают")
+                cf.toast(context, "Пароли не совпадают")
             }
             !checkMail(context, mail) -> checkFields = false
         }
@@ -93,7 +93,7 @@ class SignUpVM : ViewModel() {
         mail.substringBeforeLast("@").forEach {
             if (it.isUpperCase()) {
                 checkMail = false
-                commonFunctions.toast(context, "Текст в поле \"E-mail\" до знака \"@\" не может " +
+                cf.toast(context, "Текст в поле \"E-mail\" до знака \"@\" не может " +
                         "содержать большие буквы")
             }
         }
@@ -102,26 +102,26 @@ class SignUpVM : ViewModel() {
         if ((mail.substringBeforeLast("@")).any(illegalCharacters::contains) ||
             (mail.substringAfterLast("@")).any(illegalCharacters::contains)) {
             checkMail = false
-            commonFunctions.toast(context, "Текст в поле \"E-mail\" до знака \"@\" не может " +
+            cf.toast(context, "Текст в поле \"E-mail\" до знака \"@\" не может " +
                     "содержать специальные знаки")
         }
         val numbers = charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
         if (mail.substringAfterLast("@").any(numbers::contains)) {
             checkMail = false
-            commonFunctions.toast(context, "Текст в поле \"E-mail\" после знака \"@\" не может " +
+            cf.toast(context, "Текст в поле \"E-mail\" после знака \"@\" не может " +
                     "содержать цифры")
         }
         mail.substringAfterLast("@").forEach {
             if (it == '.') haveDot = true
             if (it.isUpperCase()) {
                 checkMail = false
-                commonFunctions.toast(context, "В поле \"E-mail\" в домене не может быть " +
+                cf.toast(context, "В поле \"E-mail\" в домене не может быть " +
                         "больших букв")
             }
         }
         if (!haveDot) {
             checkMail = false
-            commonFunctions.toast(context, "В поле \"E-mail\" не найдено разделение домена " +
+            cf.toast(context, "В поле \"E-mail\" не найдено разделение домена " +
                     "символом \".\"")
         } else {
             val list = mutableListOf<Char>()
@@ -131,12 +131,12 @@ class SignUpVM : ViewModel() {
             when {
                 list.size == 0 -> {
                     checkMail = false
-                    commonFunctions.toast(context, "Поле \"E-mail\". Домен верхнего уровня " +
+                    cf.toast(context, "Поле \"E-mail\". Домен верхнего уровня " +
                             "не может быть пустой")
                 }
                 list.size >= 4 -> {
                     checkMail = false
-                    commonFunctions.toast(context, "Поле \"E-mail\". Длина домена верхнего " +
+                    cf.toast(context, "Поле \"E-mail\". Длина домена верхнего " +
                             "уровня не может быть больше 3 символов")
                 }
             }
@@ -147,7 +147,7 @@ class SignUpVM : ViewModel() {
         }
         if (!haveSymbol) {
             checkMail = false
-            commonFunctions.toast(context, "Неверно введен E-mail")
+            cf.toast(context, "Неверно введен E-mail")
         }
 
         return checkMail

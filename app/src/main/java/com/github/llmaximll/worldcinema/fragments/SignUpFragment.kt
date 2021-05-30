@@ -30,7 +30,7 @@ class SignUpFragment : Fragment() {
     private lateinit var secondPasswordEditText: EditText
     private lateinit var signUpButton: Button
     private lateinit var signInButton: Button
-    private lateinit var commonFunctions: CommonFunctions
+    private lateinit var cf: CommonFunctions
     private var callbacks: Callbacks? = null
 
     override fun onAttach(context: Context) {
@@ -41,8 +41,8 @@ class SignUpFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        commonFunctions = CommonFunctions()
-        viewModel = commonFunctions.initVM(this, SignUpVM::class.java) as SignUpVM
+        cf = CommonFunctions.get()
+        viewModel = cf.initVM(this, SignUpVM::class.java) as SignUpVM
     }
 
     override fun onCreateView(
@@ -95,6 +95,10 @@ class SignUpFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.signIn.collect {
                 if (it) {
+                    val sp = cf.sharedPreferences(requireContext())
+                    val editor = sp?.edit()
+                    editor?.putBoolean(cf.spFirstLaunch, true)
+                    editor?.apply()
                     callbacks?.onSignUpFragment(0)
                 }
             }
