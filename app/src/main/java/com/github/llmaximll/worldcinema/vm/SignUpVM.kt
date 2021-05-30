@@ -6,22 +6,46 @@ import androidx.lifecycle.viewModelScope
 import com.github.llmaximll.worldcinema.common.CommonFunctions
 import com.github.llmaximll.worldcinema.repositories.CinemaRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val TAG = "SignUpVM"
 
 class SignUpVM : ViewModel() {
 
     private val repository = CinemaRepository.get()
     private val commonFunctions = CommonFunctions()
+    private val _signIn = MutableStateFlow(false)
+    val signIn = _signIn.asStateFlow()
 
     fun signUp(context: Context, email: String, password: String, firstName: String, lastName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = repository.signUp(email, password, firstName, lastName)
             withContext(Dispatchers.Main) {
-                if (response)
-                    commonFunctions.toast(context, "Регистрация успешна")
+                if (response) {
+                    signIn(context, email, password)
+                }
                 else
                     commonFunctions.toast(context, "Ошибка при регистрации")
+            }
+        }
+    }
+
+    fun signIn(context: Context, email: String, password: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = repository.signIn(email, password)
+            withContext(Dispatchers.Main) {
+                if (response != null) {
+                    _signIn.value = true
+                    commonFunctions.toast(context, "Регистрация успешна | " +
+                                "token=${response.token}")
+                    commonFunctions.log(TAG, "Регистрация успешна | token=${response.token}")
+                }
+                else
+                    commonFunctions.toast(context, "Регистрация успешна. " +
+                            "Ошибка при аутентификации")
             }
         }
     }

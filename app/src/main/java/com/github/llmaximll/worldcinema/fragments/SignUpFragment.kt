@@ -1,5 +1,6 @@
 package com.github.llmaximll.worldcinema.fragments
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,11 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.lifecycle.lifecycleScope
 import com.github.llmaximll.worldcinema.R
 import com.github.llmaximll.worldcinema.common.CommonFunctions
 import com.github.llmaximll.worldcinema.vm.SignUpVM
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class SignUpFragment : Fragment() {
+
+    interface Callbacks {
+        fun onSignUpFragment(fragment: Int)
+    }
 
     private lateinit var viewModel: SignUpVM
     private lateinit var nameEditText: EditText
@@ -22,6 +31,12 @@ class SignUpFragment : Fragment() {
     private lateinit var signUpButton: Button
     private lateinit var signInButton: Button
     private lateinit var commonFunctions: CommonFunctions
+    private var callbacks: Callbacks? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +77,33 @@ class SignUpFragment : Fragment() {
             if (checkFields) {
                 //Сохранение состояния в SharedPreferences
                 //Переход в SignIn
-                viewModel.signUp(requireContext(), mail, password, name, secondName)
+                signUp(mail, password, name, secondName)
+                successfulAuthentication()
             }
+        }
+        signInButton.setOnClickListener {
+            callbacks?.onSignUpFragment(1)
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
+    }
+
+    private fun successfulAuthentication() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.signIn.collect {
+                if (it) {
+                    callbacks?.onSignUpFragment(0)
+                }
+            }
+        }
+    }
+
+    private fun signUp(mail: String, password: String, name: String, secondName: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.signUp(requireContext(), mail, password, name, secondName)
         }
     }
 

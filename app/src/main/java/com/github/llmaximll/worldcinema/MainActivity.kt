@@ -5,12 +5,15 @@ import android.transition.TransitionInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.github.llmaximll.worldcinema.fragments.LaunchScreenFragment
+import com.github.llmaximll.worldcinema.fragments.MainScreenFragment
+import com.github.llmaximll.worldcinema.fragments.SignInFragment
 import com.github.llmaximll.worldcinema.fragments.SignUpFragment
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(),
-    LaunchScreenFragment.Callbacks {
+    LaunchScreenFragment.Callbacks,
+    SignUpFragment.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,21 @@ class MainActivity : AppCompatActivity(),
             .beginTransaction()
             .addSharedElement(sharedElement1, "tran")
             .replace(R.id.container_fragment, fragment)
+            .commit()
+    }
+
+    override fun onSignUpFragment(fragment: Int) {
+        val mFragment = when (fragment) {
+            0 -> MainScreenFragment.newInstance()
+            1 -> SignInFragment.newInstance()
+            else -> MainScreenFragment.newInstance()
+        }
+        supportFragmentManager
+            .beginTransaction()
+            .setCustomAnimations(
+                R.animator.transition_enter_1,
+                R.animator.transition_exit_1)
+            .replace(R.id.container_fragment, mFragment)
             .commit()
     }
 }
