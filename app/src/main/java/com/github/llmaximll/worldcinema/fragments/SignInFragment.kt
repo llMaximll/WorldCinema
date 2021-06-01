@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class SignInFragment : Fragment() {
 
     interface Callbacks {
-        fun onSignInFragment(fragmentNumber: Int)
+        fun onSignInFragment(token: Int?, fragmentNumber: Int)
     }
 
     private lateinit var viewModel: SignInVM
@@ -68,7 +68,7 @@ class SignInFragment : Fragment() {
             successfulAuthentication()
         }
         signUpButton.setOnClickListener {
-            callbacks?.onSignInFragment(1)
+            callbacks?.onSignInFragment(null, 1)
         }
     }
 
@@ -80,8 +80,8 @@ class SignInFragment : Fragment() {
     private fun successfulAuthentication() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.signIn.collect {
-                if (it) {
-                    callbacks?.onSignInFragment(0)
+                if (it != "") {
+                    callbacks?.onSignInFragment(it.toInt(), 0)
                 }
             }
         }

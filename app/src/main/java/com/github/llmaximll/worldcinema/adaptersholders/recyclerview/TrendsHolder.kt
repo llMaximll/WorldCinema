@@ -12,7 +12,6 @@ class TrendsHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(posterUrl: String) {
         Glide.with(itemView)
             .load("http://cinema.areas.su/up/images/$posterUrl")
-            .centerCrop()
             .placeholder(R.drawable.logo_foreground)
             .error(R.drawable.logo_foreground)
             .fallback(R.drawable.logo_foreground)

@@ -22,7 +22,7 @@ class ViewPagerMainScreenTrendsVM : ViewModel() {
             else -> "new"
         }
         viewModelScope.launch(Dispatchers.IO) {
-            _movieInfo.value = repository.downloadInfoMovies(filter)
+            _movieInfo.value = repository.downloadInfoMovies(null, filter)
         }
     }
 }

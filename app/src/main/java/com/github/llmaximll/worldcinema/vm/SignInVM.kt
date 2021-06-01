@@ -17,15 +17,15 @@ class SignInVM : ViewModel() {
 
     private val repository = CinemaRepository.get()
     private val cf = CommonFunctions.get()
-    private val _signIn = MutableStateFlow(false)
+    private val _signIn = MutableStateFlow("")
     val signIn = _signIn.asStateFlow()
 
     fun signIn(context: Context, email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.signIn(email, password)
+            val response = repository.signIn(null, email, password)
             withContext(Dispatchers.Main) {
                 if (response != null) {
-                    _signIn.value = true
+                    _signIn.value = response.token
                     //sharedPreferences
                     val sp = cf.sharedPreferences(context)
                     val editor = sp?.edit()

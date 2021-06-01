@@ -1,9 +1,12 @@
 package com.github.llmaximll.worldcinema.common
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -37,6 +40,26 @@ class CommonFunctions private constructor() {
 
     fun sharedPreferences(context: Context?): SharedPreferences? =
         context?.getSharedPreferences(spName, Context.MODE_PRIVATE)
+
+    fun animateView(view: View, reverse: Boolean) {
+        if (!reverse) {
+            val animatorX = ObjectAnimator.ofFloat(view, "scaleX", 0.9f)
+            val animatorY = ObjectAnimator.ofFloat(view, "scaleY", 0.9f)
+            AnimatorSet().apply {
+                playTogether(animatorX, animatorY)
+                duration = 150
+                start()
+            }
+        } else {
+            val animatorX = ObjectAnimator.ofFloat(view, "scaleX", 1.0f)
+            val animatorY = ObjectAnimator.ofFloat(view, "scaleY", 1.0f)
+            AnimatorSet().apply {
+                playTogether(animatorX, animatorY)
+                duration = 150
+                start()
+            }
+        }
+    }
 
     companion object {
         private var INSTANCE: CommonFunctions? = null

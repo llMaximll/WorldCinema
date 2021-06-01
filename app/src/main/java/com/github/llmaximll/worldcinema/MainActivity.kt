@@ -51,10 +51,10 @@ class MainActivity : AppCompatActivity(),
             .commit()
     }
 
-    override fun onSignUpFragment(fragment: Int) {
+    override fun onSignUpFragment(token: Int?, fragment: Int) {
         when (fragment) {
             0 -> {
-                val mFragment = MainScreenFragment.newInstance()
+                val mFragment = MainScreenFragment.newInstance(token)
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 supportFragmentManager
                     .beginTransaction()
@@ -78,10 +78,10 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onSignInFragment(fragmentNumber: Int) {
+    override fun onSignInFragment(token: Int?, fragmentNumber: Int) {
         when (fragmentNumber) {
             0 -> {
-                val fragment = MainScreenFragment.newInstance()
+                val fragment = MainScreenFragment.newInstance(token)
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 supportFragmentManager
                     .beginTransaction()

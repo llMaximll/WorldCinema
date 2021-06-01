@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class SignUpFragment : Fragment() {
 
     interface Callbacks {
-        fun onSignUpFragment(fragment: Int)
+        fun onSignUpFragment(token: Int?, fragment: Int)
     }
 
     private lateinit var viewModel: SignUpVM
@@ -82,7 +82,7 @@ class SignUpFragment : Fragment() {
             }
         }
         signInButton.setOnClickListener {
-            callbacks?.onSignUpFragment(1)
+            callbacks?.onSignUpFragment(null, 1)
         }
     }
 
@@ -94,12 +94,12 @@ class SignUpFragment : Fragment() {
     private fun successfulAuthentication() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.signIn.collect {
-                if (it) {
+                if (it != "") {
                     val sp = cf.sharedPreferences(requireContext())
                     val editor = sp?.edit()
                     editor?.putBoolean(cf.spFirstLaunch, true)
                     editor?.apply()
-                    callbacks?.onSignUpFragment(0)
+                    callbacks?.onSignUpFragment(it.toInt(), 0)
                 }
             }
         }

@@ -18,10 +18,10 @@ class CinemaRepository private constructor(context: Context) {
 
     private val cf = CommonFunctions.get()
 
-    suspend fun signUp(email: String, password: String, firstName: String, lastName: String): Boolean {
+    suspend fun signUp(token: String?, email: String, password: String, firstName: String, lastName: String): Boolean {
         return suspendCoroutine { cont ->
             NetworkService
-                .instance
+                .getInstance(token)
                 ?.getJsonApi()
                 ?.signUp(email, password, firstName, lastName)
                 ?.enqueue(object : Callback<String> {
@@ -42,10 +42,10 @@ class CinemaRepository private constructor(context: Context) {
         }
     }
 
-    suspend fun signIn(email: String, password: String): SignInDC? {
+    suspend fun signIn(token: String?, email: String, password: String): SignInDC? {
         return suspendCoroutine { cont ->
             NetworkService
-                .instance
+                .getInstance(token)
                 ?.getJsonApi()
                 ?.signIn(email, password)
                 ?.enqueue(object : Callback<SignInDC> {
@@ -68,10 +68,10 @@ class CinemaRepository private constructor(context: Context) {
         }
     }
 
-    suspend fun downloadInfoMovies(filter: String): List<MovieInfo>? {
+    suspend fun downloadInfoMovies(token: String?, filter: String): List<MovieInfo>? {
         return suspendCoroutine { cont ->
             NetworkService
-                .instance
+                .getInstance(token)
                 ?.getJsonApi()
                 ?.downloadMovies(filter)
                 ?.enqueue(object : Callback<List<MovieInfo>> {
@@ -97,10 +97,10 @@ class CinemaRepository private constructor(context: Context) {
         }
     }
 
-    suspend fun downloadInfoPoster(): PosterInfo? {
+    suspend fun downloadInfoPoster(token: String?): PosterInfo? {
         return suspendCoroutine { cont ->
             NetworkService
-                .instance
+                .getInstance(token)
                 ?.getJsonApi()
                 ?.downloadInfoPoster()
                 ?.enqueue(object : Callback<PosterInfo> {
@@ -118,6 +118,33 @@ class CinemaRepository private constructor(context: Context) {
                     }
 
                     override fun onFailure(call: Call<PosterInfo>?, t: Throwable?) {
+                        cont.resume(null)
+                        cf.log(TAG, "result=$t")
+                    }
+                })
+        }
+    }
+
+    suspend fun downloadInfoLastView(token: String, filter: String): MovieInfo? {
+        cf.log(TAG, "repository downloadInfoLastView | token=$token")
+        return suspendCoroutine { cont ->
+            NetworkService
+                .getInstance(token)
+                ?.getJsonApi()
+                ?.downloadInfoLastView(filter)
+                ?.enqueue(object : Callback<List<MovieInfo>> {
+                    override fun onResponse(call: Call<List<MovieInfo>>?,
+                                            response: Response<List<MovieInfo>>?) {
+                        if (response?.isSuccessful == true) {
+                            cont.resume(response.body()[0])
+                        }
+                        if (response?.isSuccessful != true) {
+                            cont.resume(null)
+                            cf.log(TAG, "response=${response?.body()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<MovieInfo>>?, t: Throwable?) {
                         cont.resume(null)
                         cf.log(TAG, "result=$t")
                     }

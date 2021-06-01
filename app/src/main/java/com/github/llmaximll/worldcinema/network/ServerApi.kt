@@ -29,4 +29,8 @@ interface ServerApi {
     @GET("movies/cover")
     fun downloadInfoPoster():
             Call<PosterInfo>
+
+    @GET("usermovies")
+    fun downloadInfoLastView(@Query("filter") filter: String):
+            Call<List<MovieInfo>>
 }

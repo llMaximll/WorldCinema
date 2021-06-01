@@ -1,10 +1,8 @@
 package com.github.llmaximll.worldcinema.fragments
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +20,8 @@ import kotlinx.coroutines.flow.collect
 
 private const val TAG = "MainScreenFragment"
 
+private const val ARG_TOKEN = "arg_token"
+
 class MainScreenFragment : Fragment() {
 
     private lateinit var viewModel: MainScreenVM
@@ -29,6 +29,8 @@ class MainScreenFragment : Fragment() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
     private lateinit var posterImageView: ImageView
+    private lateinit var lastImageView: ImageView
+    private lateinit var playImageView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +50,8 @@ class MainScreenFragment : Fragment() {
         tabLayout = view.findViewById(R.id.tabLayout)
         viewPager = view.findViewById(R.id.viewPager)
         posterImageView = view.findViewById(R.id.poster_ImageView)
+        lastImageView = view.findViewById(R.id.last_imageView)
+        playImageView = view.findViewById(R.id.play_ImageView)
 
         viewPager.adapter = TrendsAdapter(this)
         //отключение скролла viewpager
@@ -59,7 +63,27 @@ class MainScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setTabs()
+        downloadInfoLastView()
         downloadInfoPoster()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        playImageView.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    cf.animateView(view, false)
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    cf.animateView(view, true)
+                }
+                MotionEvent.ACTION_UP -> {
+                    cf.animateView(view, true)
+                    view.performClick()
+                }
+            }
+            true
+        }
     }
 
     private fun setTabs() {
@@ -78,7 +102,7 @@ class MainScreenFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.posterInfo.collect { posterInfo ->
                 if (posterInfo != null) {
-                    updateUI("http://cinema.areas.su/up/images/${posterInfo.foregroundImage}")
+                    updatePoster("http://cinema.areas.su/up/images/${posterInfo.foregroundImage}")
                 } else {
                     cf.log(TAG, "downloadInfoImages | posterInfo = null")
                 }
@@ -86,7 +110,23 @@ class MainScreenFragment : Fragment() {
         }
     }
 
-    private fun updateUI(posterURL: String) {
+    private fun downloadInfoLastView() {
+        val token = arguments?.getInt(ARG_TOKEN, 0) ?: 0
+        cf.log(TAG, "downloadInfoLastView | token=$token")
+        viewModel.downloadInfoLastView(token)
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.lastViewInfo.collect { movieInfo ->
+                if (movieInfo != null) {
+                    updateLastView("http://cinema.areas.su/up/images/${movieInfo.poster}")
+                    cf.log(TAG, "movieInfo=$movieInfo")
+                } else {
+                    cf.log(TAG, "downloadInfoLastView | movieInfo = null")
+                }
+            }
+        }
+    }
+
+    private fun updatePoster(posterURL: String) {
         //Update poster
         Glide.with(this)
             .load(posterURL)
@@ -97,7 +137,27 @@ class MainScreenFragment : Fragment() {
             .into(posterImageView)
     }
 
+    private fun updateLastView(lastViewURL: String) {
+        //Update lastView
+        Glide.with(this)
+            .load(lastViewURL)
+            .centerCrop()
+            .placeholder(R.drawable.logo_foreground)
+            .error(R.drawable.logo_foreground)
+            .fallback(R.drawable.logo_foreground)
+            .into(lastImageView)
+    }
+
     companion object {
-        fun newInstance(): MainScreenFragment = MainScreenFragment()
+        fun newInstance(token: Int?): MainScreenFragment {
+            val args = Bundle().apply {
+                if (token != null) {
+                    putInt(ARG_TOKEN, token)
+                }
+            }
+            return MainScreenFragment().apply {
+                arguments = args
+            }
+        }
     }
 }

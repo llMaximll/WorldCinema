@@ -17,12 +17,12 @@ class SignUpVM : ViewModel() {
 
     private val repository = CinemaRepository.get()
     private val cf = CommonFunctions.get()
-    private val _signIn = MutableStateFlow(false)
+    private val _signIn = MutableStateFlow("")
     val signIn = _signIn.asStateFlow()
 
     fun signUp(context: Context, email: String, password: String, firstName: String, lastName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.signUp(email, password, firstName, lastName)
+            val response = repository.signUp(null, email, password, firstName, lastName)
             withContext(Dispatchers.Main) {
                 if (response) {
                     signIn(context, email, password)
@@ -35,10 +35,10 @@ class SignUpVM : ViewModel() {
 
     private fun signIn(context: Context, email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.signIn(email, password)
+            val response = repository.signIn(null, email, password)
             withContext(Dispatchers.Main) {
                 if (response != null) {
-                    _signIn.value = true
+                    _signIn.value = response.token
                     //sharedPreferences
                     val sp = cf.sharedPreferences(context)
                     val editor = sp?.edit()
