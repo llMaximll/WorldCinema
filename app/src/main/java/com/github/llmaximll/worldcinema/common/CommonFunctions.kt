@@ -14,6 +14,7 @@ class CommonFunctions private constructor() {
 
     private val spName = "sp_worldCinema"
     val spFirstLaunch = "sp_first_launch"
+    val spToken = "sp_token"
 
     fun toast(context: Context?, message: String) {
         val toast = Toast.makeText(

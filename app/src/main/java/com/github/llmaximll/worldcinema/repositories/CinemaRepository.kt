@@ -2,20 +2,21 @@ package com.github.llmaximll.worldcinema.repositories
 
 import android.content.Context
 import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.dataclasses.network.MovieInfo
+import com.github.llmaximll.worldcinema.dataclasses.network.PosterInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.SignInDC
 import com.github.llmaximll.worldcinema.network.NetworkService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 private const val TAG = "CinemaRepository"
 
 class CinemaRepository private constructor(context: Context) {
 
-    private val commonFunctions = CommonFunctions.get()
+    private val cf = CommonFunctions.get()
 
     suspend fun signUp(email: String, password: String, firstName: String, lastName: String): Boolean {
         return suspendCoroutine { cont ->
@@ -29,13 +30,13 @@ class CinemaRepository private constructor(context: Context) {
                             cont.resume(true)
                         } else {
                             cont.resume(false)
-                            commonFunctions.log(TAG, "response=${response?.message()}")
+                            cf.log(TAG, "response=${response?.message()}")
                         }
                     }
 
                     override fun onFailure(call: Call<String>?, t: Throwable?) {
                         cont.resume(false)
-                        commonFunctions.log(TAG, "result=$t")
+                        cf.log(TAG, "result=$t")
                     }
                 })
         }
@@ -55,13 +56,70 @@ class CinemaRepository private constructor(context: Context) {
                             cont.resume(response.body())
                         } else {
                             cont.resume(null)
-                            commonFunctions.log(TAG, "response=${response?.body()}")
+                            cf.log(TAG, "response=${response?.body()}")
                         }
                     }
 
                     override fun onFailure(call: Call<SignInDC>?, t: Throwable?) {
                         cont.resume(null)
-                        commonFunctions.log(TAG, "result=$t")
+                        cf.log(TAG, "result=$t")
+                    }
+                })
+        }
+    }
+
+    suspend fun downloadInfoMovies(filter: String): List<MovieInfo>? {
+        return suspendCoroutine { cont ->
+            NetworkService
+                .instance
+                ?.getJsonApi()
+                ?.downloadMovies(filter)
+                ?.enqueue(object : Callback<List<MovieInfo>> {
+                    override fun onResponse(
+                        call: Call<List<MovieInfo>>?,
+                        response: Response<List<MovieInfo>>?
+                    ) {
+                        if (response?.isSuccessful == true) {
+                            cont.resume(response.body())
+                        }
+                        if (response?.isSuccessful != true) {
+                            cont.resume(null)
+                            cf.log(TAG, "response=${response?.body()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<MovieInfo>>?, t: Throwable?) {
+                        cont.resume(null)
+                        cf.log(TAG, "result=$t")
+                    }
+
+                })
+        }
+    }
+
+    suspend fun downloadInfoPoster(): PosterInfo? {
+        return suspendCoroutine { cont ->
+            NetworkService
+                .instance
+                ?.getJsonApi()
+                ?.downloadInfoPoster()
+                ?.enqueue(object : Callback<PosterInfo> {
+                    override fun onResponse(
+                        call: Call<PosterInfo>?,
+                        response: Response<PosterInfo>?
+                    ) {
+                        if (response?.isSuccessful == true) {
+                            cont.resume(response.body())
+                        }
+                        if (response?.isSuccessful != true) {
+                            cont.resume(null)
+                            cf.log(TAG, "response=${response?.body()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<PosterInfo>?, t: Throwable?) {
+                        cont.resume(null)
+                        cf.log(TAG, "result=$t")
                     }
                 })
         }

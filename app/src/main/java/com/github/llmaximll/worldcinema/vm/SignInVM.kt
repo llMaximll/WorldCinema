@@ -26,6 +26,12 @@ class SignInVM : ViewModel() {
             withContext(Dispatchers.Main) {
                 if (response != null) {
                     _signIn.value = true
+                    //sharedPreferences
+                    val sp = cf.sharedPreferences(context)
+                    val editor = sp?.edit()
+                    editor?.putInt(cf.spToken, response.token.toInt())
+                    editor?.apply()
+                    
                     cf.toast(context, "Аутентификация успешна")
                     cf.log(TAG, "Аутентификация успешна | token=${response.token}")
                 }

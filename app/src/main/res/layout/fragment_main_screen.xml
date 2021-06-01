@@ -1,6 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:overScrollMode="never"
+    android:background="#332973"
+    android:fitsSystemWindows="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="400dp">
+
+            <ImageView
+                android:id="@+id/poster_ImageView"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:src="@drawable/logo_foreground"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="170dp"
+                android:layout_height="65dp"
+                android:layout_gravity="bottom|center"
+                android:layout_marginBottom="50dp"
+                android:backgroundTint="#EF3A01"
+                android:text="Смотреть"/>
+
+        </FrameLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="7dp"
+            android:background="#1AC4C4C4"
+            app:tabTextColor="#EF3A01"
+            app:tabIndicatorColor="#EF3A01"
+            app:tabIndicatorHeight="8dp" />
+        
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:text="Вы смотрели"
+            android:textSize="30sp"
+            android:textColor="#EF3A01"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+</ScrollView>

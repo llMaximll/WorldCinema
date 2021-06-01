@@ -33,12 +33,18 @@ class SignUpVM : ViewModel() {
         }
     }
 
-    fun signIn(context: Context, email: String, password: String) {
+    private fun signIn(context: Context, email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = repository.signIn(email, password)
             withContext(Dispatchers.Main) {
                 if (response != null) {
                     _signIn.value = true
+                    //sharedPreferences
+                    val sp = cf.sharedPreferences(context)
+                    val editor = sp?.edit()
+                    editor?.putInt(cf.spToken, response.token.toInt())
+                    editor?.apply()
+
                     cf.toast(context, "Регистрация успешна")
                     cf.log(TAG, "Регистрация успешна | token=${response.token}")
                 }

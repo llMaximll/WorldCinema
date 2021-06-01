@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity(),
                 supportFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(
-                        R.animator.transition_enter_1,
-                        R.animator.transition_exit_1)
+                        android.R.animator.fade_in,
+                        android.R.animator.fade_out)
                     .replace(R.id.container_fragment, mFragment)
                     .commit()
             }
@@ -70,8 +70,8 @@ class MainActivity : AppCompatActivity(),
                     .beginTransaction()
                     .addToBackStack(null)
                     .setCustomAnimations(
-                        R.animator.transition_enter_1,
-                        R.animator.transition_exit_1)
+                        android.R.animator.fade_in,
+                        android.R.animator.fade_out)
                     .replace(R.id.container_fragment, mFragment)
                     .commit()
             }
@@ -86,8 +86,8 @@ class MainActivity : AppCompatActivity(),
                 supportFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(
-                        R.animator.transition_enter_1,
-                        R.animator.transition_exit_1
+                        android.R.animator.fade_in,
+                        android.R.animator.fade_out
                     )
                     .replace(R.id.container_fragment, fragment)
                     .commit()
@@ -98,8 +98,8 @@ class MainActivity : AppCompatActivity(),
                     .beginTransaction()
                     .addToBackStack(null)
                     .setCustomAnimations(
-                        R.animator.transition_enter_1,
-                        R.animator.transition_exit_1
+                        android.R.animator.fade_in,
+                        android.R.animator.fade_out
                     )
                     .replace(R.id.container_fragment, fragment)
                     .commit()
