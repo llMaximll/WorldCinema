@@ -29,7 +29,6 @@ class MainScreenFragment : Fragment() {
     interface Callbacks {
         fun onMainScreenFragment(movieId: String)
     }
-
     private lateinit var viewModel: MainScreenVM
     private lateinit var cf: CommonFunctions
     private lateinit var tabLayout: TabLayout
@@ -41,6 +40,7 @@ class MainScreenFragment : Fragment() {
     private lateinit var bottomNavigationView: BottomNavigationView
     private var callbacks: Callbacks? = null
     private var posterId: String? = null
+    private var lastViewId: String? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -49,6 +49,7 @@ class MainScreenFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         cf = CommonFunctions.get()
         viewModel = cf.initVM(this, MainScreenVM::class.java) as MainScreenVM
         //изменение цвета статус бара на прозрачный
@@ -101,6 +102,9 @@ class MainScreenFragment : Fragment() {
                 }
                 MotionEvent.ACTION_UP -> {
                     cf.animateView(view, true)
+                    if (lastViewId != null) {
+                        callbacks?.onMainScreenFragment(lastViewId!!)
+                    }
                     view.performClick()
                 }
             }
@@ -145,6 +149,7 @@ class MainScreenFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.lastViewInfo.collect { movieInfo ->
                 if (movieInfo != null) {
+                    lastViewId = movieInfo.movieId
                     updateLastView("http://cinema.areas.su/up/images/${movieInfo.poster}")
                     cf.log(TAG, "movieInfo=$movieInfo")
                 } else {

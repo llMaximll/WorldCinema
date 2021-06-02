@@ -1,5 +1,6 @@
 package com.github.llmaximll.worldcinema.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.llmaximll.worldcinema.R
 import com.github.llmaximll.worldcinema.adaptersholders.recyclerview.TrendsAdapter
 import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.dataclasses.network.MovieInfo
 import com.github.llmaximll.worldcinema.vm.ViewPagerMainScreenTrendsVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -21,11 +23,21 @@ private const val ARG_FRAGMENT = "arg_fragment"
 
 class ViewPagerMainScreenTrendsFragment : Fragment() {
 
+    interface Callbacks {
+        fun onViewPagerMainScreenTrendsFragment(movieId: String)
+    }
+
     private lateinit var cf: CommonFunctions
     private lateinit var viewModel: ViewPagerMainScreenTrendsVM
     private lateinit var recyclerView: RecyclerView
-    private var posterList: MutableList<String> = mutableListOf()
+    private var callbacks: Callbacks? = null
+    private var posterList: MutableList<MovieInfo> = mutableListOf()
     private var countFragment = -1
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +60,7 @@ class ViewPagerMainScreenTrendsFragment : Fragment() {
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL,
             false)
-        recyclerView.adapter = TrendsAdapter(listOf())
+        recyclerView.adapter = TrendsAdapter(callbacks!!, listOf())
 
         return view
     }
@@ -56,6 +68,11 @@ class ViewPagerMainScreenTrendsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         downloadInfoMovies()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     private fun downloadInfoMovies() {
@@ -68,9 +85,9 @@ class ViewPagerMainScreenTrendsFragment : Fragment() {
             viewModel.movieInfo.collect { list ->
                 if (list != null && list.isNotEmpty()) {
                     list.forEach { movieInfo ->
-                        posterList.add(movieInfo.poster)
+                        posterList.add(movieInfo)
                     }
-                    recyclerView.adapter = TrendsAdapter(posterList)
+                    recyclerView.adapter = TrendsAdapter(callbacks!!, posterList)
                     cf.log(TAG, "downloadInfoImages | posterList=$posterList")
                 } else {
                     cf.log(TAG, "downloadInfoImages | List<MovieInfo> = null")

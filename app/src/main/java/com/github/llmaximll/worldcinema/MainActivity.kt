@@ -13,7 +13,8 @@ class MainActivity : AppCompatActivity(),
     LaunchScreenFragment.Callbacks,
     SignUpFragment.Callbacks,
     SignInFragment.Callbacks,
-    MainScreenFragment.Callbacks {
+    MainScreenFragment.Callbacks,
+    ViewPagerMainScreenTrendsFragment.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +107,15 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onMainScreenFragment(movieId: String) {
+        val fragment = MovieScreenFragment.newInstance(movieId)
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.container_fragment, fragment)
+            .commit()
+    }
+
+    override fun onViewPagerMainScreenTrendsFragment(movieId: String) {
         val fragment = MovieScreenFragment.newInstance(movieId)
         supportFragmentManager
             .beginTransaction()
