@@ -33,4 +33,8 @@ interface ServerApi {
     @GET("usermovies")
     fun downloadInfoLastView(@Query("filter") filter: String):
             Call<List<MovieInfo>>
+
+    @GET("movies/{movieId}")
+    fun downloadInfoRequiredMovie(@Path("movieId") movieId: String):
+            Call<MovieInfo>
 }

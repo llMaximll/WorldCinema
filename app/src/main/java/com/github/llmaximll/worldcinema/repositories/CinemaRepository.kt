@@ -152,6 +152,33 @@ class CinemaRepository private constructor(context: Context) {
         }
     }
 
+    suspend fun downloadInfoRequiredMovie(movieId: String): MovieInfo? {
+        return suspendCoroutine { cont ->
+            NetworkService
+                .getInstance(null)
+                ?.getJsonApi()
+                ?.downloadInfoRequiredMovie(movieId)
+                ?.enqueue(object : Callback<MovieInfo> {
+                    override fun onResponse(
+                        call: Call<MovieInfo>?,
+                        response: Response<MovieInfo>?
+                    ) {
+                        if (response?.isSuccessful == true) {
+                            cont.resume(response.body())
+                        }
+                        if (response?.isSuccessful != true) {
+                            cont.resume(null)
+                            cf.log(TAG, "response=${response?.body()}")
+                        }
+                    }
+                    override fun onFailure(call: Call<MovieInfo>?, t: Throwable?) {
+                        cont.resume(null)
+                        cf.log(TAG, "result=$t")
+                    }
+                })
+        }
+    }
+
     companion object {
         private var INSTANCE: CinemaRepository? = null
 

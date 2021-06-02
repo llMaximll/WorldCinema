@@ -1,12 +1,24 @@
 package com.github.llmaximll.worldcinema.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.github.llmaximll.worldcinema.R
 import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.dataclasses.network.MovieInfo
+import com.github.llmaximll.worldcinema.vm.MovieScreenVM
+import com.google.android.material.appbar.MaterialToolbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 private const val TAG = "MovieScreenFragment"
 private const val ARG_MOVIE_ID = "arg_movie_id"
@@ -14,14 +26,21 @@ private const val ARG_MOVIE_ID = "arg_movie_id"
 class MovieScreenFragment : Fragment() {
 
     private lateinit var cf: CommonFunctions
-    private var movieId: Int = 0
+    private lateinit var viewModel: MovieScreenVM
+    private lateinit var posterImageView: ImageView
+    private lateinit var toolBar: MaterialToolbar
+    private lateinit var titleTextView: TextView
+    private var movieId: String = "movieId=null"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         cf = CommonFunctions.get()
-        movieId = arguments?.getInt(ARG_MOVIE_ID, 0) ?: 0
+        viewModel = cf.initVM(this, MovieScreenVM::class.java) as MovieScreenVM
+        movieId = arguments?.getString(ARG_MOVIE_ID, "movieId=null") ?: "movieId=null"
         cf.log(TAG, "movieId=$movieId")
+        //return status bar
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
     override fun onCreateView(
@@ -31,9 +50,70 @@ class MovieScreenFragment : Fragment() {
     ): View? {
         val view = layoutInflater.inflate(R.layout.fragment_movie_screen, container, false)
 
-
+        posterImageView = view.findViewById(R.id.poster_ImageView)
+        toolBar = view.findViewById(R.id.toolBar)
+        titleTextView = view.findViewById(R.id.toolBar_textView)
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setToolBar()
+        downloadInfoRequiredMovie(movieId)
+    }
+
+    private fun downloadInfoRequiredMovie(movieId: String) {
+        viewModel.downloadInfoRequiredMovie(movieId)
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.movieInfo.collect { movieInfo ->
+                if (movieInfo != null) {
+                    updateUI(movieInfo)
+                    cf.log(TAG, "downloadInfoRequiredMovie | movieInfo=$movieInfo")
+                } else {
+                    cf.log(TAG, "downloadInfoRequiredMovie | movieInfo = null")
+                }
+            }
+        }
+    }
+
+    private fun updateUI(movieInfo: MovieInfo) {
+        Glide.with(this)
+            .load("http://cinema.areas.su/up/images/${movieInfo.poster}")
+            .centerCrop()
+            .placeholder(R.drawable.logo_foreground)
+            .error(R.drawable.logo_foreground)
+            .fallback(R.drawable.logo_foreground)
+            .into(posterImageView)
+        //toolBar
+        titleTextView.text = movieInfo.name
+        when (movieInfo.age) {
+            "18" -> {
+                toolBar.menu.findItem(R.id.age).setIcon(R.drawable.ic_age_18)
+            }
+            "16" -> {
+                toolBar.menu.findItem(R.id.age).setIcon(R.drawable.ic_age_16)
+            }
+            "12" -> {
+                toolBar.menu.findItem(R.id.age).setIcon(R.drawable.ic_age_12)
+            }
+            "6" -> {
+                toolBar.menu.findItem(R.id.age).setIcon(R.drawable.ic_age_6)
+            }
+            "0" -> {
+                toolBar.menu.findItem(R.id.age).setIcon(R.drawable.ic_age_0)
+            }
+        }
+        toolBar.menu.findItem(R.id.comments).setIcon(R.drawable.ic_messages)
+    }
+
+    private fun setToolBar() {
+        toolBar.setNavigationIcon(R.drawable.ic_back_arrow)
+        toolBar.setNavigationIconTint(Color.WHITE)
+        toolBar.setTitleTextColor(Color.WHITE)
+        toolBar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 
     companion object {
