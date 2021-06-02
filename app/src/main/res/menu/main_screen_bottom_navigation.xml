@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/main"
+        android:icon="@drawable/ic_main_menu"
+        app:showAsAction="ifRoom"
+        android:title="Главная"/>
+
+    <item
+        android:id="@+id/selections"
+        android:icon="@drawable/ic_selections_menu"
+        app:showAsAction="ifRoom"
+        android:title="Подборка"/>
+
+    <item
+        android:id="@+id/collections"
+        android:icon="@drawable/ic_favorites_menu"
+        app:showAsAction="ifRoom"
+        android:title="Коллекции"/>
+
+    <item
+        android:id="@+id/profile"
+        android:title="Профиль"
+        android:icon="@drawable/ic_profile_menu"
+        app:showAsAction="ifRoom"/>
+</menu>

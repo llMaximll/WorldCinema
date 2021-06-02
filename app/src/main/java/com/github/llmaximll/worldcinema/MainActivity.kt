@@ -5,17 +5,15 @@ import android.transition.TransitionInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
-import com.github.llmaximll.worldcinema.fragments.LaunchScreenFragment
-import com.github.llmaximll.worldcinema.fragments.MainScreenFragment
-import com.github.llmaximll.worldcinema.fragments.SignInFragment
-import com.github.llmaximll.worldcinema.fragments.SignUpFragment
+import com.github.llmaximll.worldcinema.fragments.*
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(),
     LaunchScreenFragment.Callbacks,
     SignUpFragment.Callbacks,
-    SignInFragment.Callbacks {
+    SignInFragment.Callbacks,
+    MainScreenFragment.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,5 +103,14 @@ class MainActivity : AppCompatActivity(),
                     .commit()
             }
         }
+    }
+
+    override fun onMainScreenFragment(movieId: String) {
+        val fragment = MovieScreenFragment.newInstance(movieId)
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.container_fragment, fragment)
+            .commit()
     }
 }

@@ -1,6 +1,6 @@
 package com.github.llmaximll.worldcinema.fragments
 
-import android.animation.ObjectAnimator
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -12,17 +12,23 @@ import com.github.llmaximll.worldcinema.R
 import com.github.llmaximll.worldcinema.adaptersholders.viewpager.TrendsAdapter
 import com.github.llmaximll.worldcinema.common.CommonFunctions
 import com.github.llmaximll.worldcinema.vm.MainScreenVM
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainScreenFragment"
 
 private const val ARG_TOKEN = "arg_token"
 
 class MainScreenFragment : Fragment() {
+
+    interface Callbacks {
+        fun onMainScreenFragment(movieId: String)
+    }
 
     private lateinit var viewModel: MainScreenVM
     private lateinit var cf: CommonFunctions
@@ -31,6 +37,15 @@ class MainScreenFragment : Fragment() {
     private lateinit var posterImageView: ImageView
     private lateinit var lastImageView: ImageView
     private lateinit var playImageView: View
+    private lateinit var watchPosterButton: MaterialButton
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private var callbacks: Callbacks? = null
+    private var posterId: String? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +67,8 @@ class MainScreenFragment : Fragment() {
         posterImageView = view.findViewById(R.id.poster_ImageView)
         lastImageView = view.findViewById(R.id.last_imageView)
         playImageView = view.findViewById(R.id.play_ImageView)
+        watchPosterButton = view.findViewById(R.id.watch_poster_button)
+        bottomNavigationView = view.findViewById(R.id.bottomNavigationView)
 
         viewPager.adapter = TrendsAdapter(this)
         //отключение скролла viewpager
@@ -63,12 +80,17 @@ class MainScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setTabs()
-        downloadInfoLastView()
         downloadInfoPoster()
+        downloadInfoLastView()
     }
 
     override fun onStart() {
         super.onStart()
+        watchPosterButton.setOnClickListener {
+            if (posterId != null) {
+                callbacks?.onMainScreenFragment(posterId!!)
+            }
+        }
         playImageView.setOnTouchListener { view, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -84,6 +106,11 @@ class MainScreenFragment : Fragment() {
             }
             true
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     private fun setTabs() {
@@ -102,6 +129,7 @@ class MainScreenFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.posterInfo.collect { posterInfo ->
                 if (posterInfo != null) {
+                    posterId = posterInfo.movieId
                     updatePoster("http://cinema.areas.su/up/images/${posterInfo.foregroundImage}")
                 } else {
                     cf.log(TAG, "downloadInfoImages | posterInfo = null")

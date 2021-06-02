@@ -8,7 +8,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.1"
+        android:layout_weight="0.08"
         android:overScrollMode="never"
         android:background="#332973">
 
@@ -28,6 +28,7 @@
                     android:src="@drawable/logo_foreground"/>
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/watch_poster_button"
                     android:layout_width="170dp"
                     android:layout_height="65dp"
                     android:layout_gravity="bottom|center"
@@ -87,8 +88,14 @@
     </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="#1C1A19"/>
+        android:background="#1C1A19"
+        android:elevation="5dp"
+        app:itemIconTint="@drawable/tab_color_main_screen"
+        app:itemTextColor="@drawable/tab_color_main_screen"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/main_screen_bottom_navigation"/>
 </LinearLayout>
