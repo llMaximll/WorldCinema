@@ -7,7 +7,8 @@
     android:background="#332973"
     app:layoutDescription="@xml/fragment_sign_up_scene"
     tools:context=".fragments.SignUpFragment"
-    tools:showPaths="true">
+    tools:showPaths="true"
+    android:id="@+id/motionLayout">
 
     <ImageView
         android:id="@+id/imageView"

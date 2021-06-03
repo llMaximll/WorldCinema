@@ -76,23 +76,27 @@ class ViewPagerMainScreenTrendsFragment : Fragment() {
     }
 
     private fun downloadInfoMovies() {
-        if (countFragment != -1) {
-            viewModel.downloadInfoMovies(countFragment)
-        } else {
-            cf.log(TAG, "countFragment=-1")
-        }
-        lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.movieInfo.collect { list ->
-                if (list != null && list.isNotEmpty()) {
-                    list.forEach { movieInfo ->
-                        posterList.add(movieInfo)
+        if (posterList.size == 0) {
+            if (countFragment != -1) {
+                viewModel.downloadInfoMovies(countFragment)
+            } else {
+                cf.log(TAG, "countFragment=-1")
+            }
+            lifecycleScope.launch(Dispatchers.Main) {
+                viewModel.movieInfo.collect { list ->
+                    if (list != null && list.isNotEmpty()) {
+                        list.forEach { movieInfo ->
+                            posterList.add(movieInfo)
+                        }
+                        recyclerView.adapter = TrendsAdapter(callbacks!!, posterList)
+                        cf.log(TAG, "downloadInfoImages | posterList=$posterList")
+                    } else {
+                        cf.log(TAG, "downloadInfoImages | List<MovieInfo> = null")
                     }
-                    recyclerView.adapter = TrendsAdapter(callbacks!!, posterList)
-                    cf.log(TAG, "downloadInfoImages | posterList=$posterList")
-                } else {
-                    cf.log(TAG, "downloadInfoImages | List<MovieInfo> = null")
                 }
             }
+        } else {
+            recyclerView.adapter = TrendsAdapter(callbacks!!, posterList)
         }
     }
 

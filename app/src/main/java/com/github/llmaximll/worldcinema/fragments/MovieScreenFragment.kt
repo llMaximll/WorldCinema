@@ -8,10 +8,16 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.github.llmaximll.worldcinema.R
+import com.github.llmaximll.worldcinema.adaptersholders.recyclerview.FramesAdapter
+import com.github.llmaximll.worldcinema.adaptersholders.recyclerview.TagsAdapter
 import com.github.llmaximll.worldcinema.common.CommonFunctions
 import com.github.llmaximll.worldcinema.dataclasses.network.MovieInfo
 import com.github.llmaximll.worldcinema.vm.MovieScreenVM
@@ -30,6 +36,10 @@ class MovieScreenFragment : Fragment() {
     private lateinit var posterImageView: ImageView
     private lateinit var toolBar: MaterialToolbar
     private lateinit var titleTextView: TextView
+    private lateinit var tagsRecyclerView: RecyclerView
+    private lateinit var coordinatorLayout: CoordinatorLayout
+    private lateinit var descriptionTextView: TextView
+    private lateinit var framesRecyclerView: RecyclerView
     private var movieId: String = "movieId=null"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +63,12 @@ class MovieScreenFragment : Fragment() {
         posterImageView = view.findViewById(R.id.poster_ImageView)
         toolBar = view.findViewById(R.id.toolBar)
         titleTextView = view.findViewById(R.id.toolBar_textView)
+        tagsRecyclerView = view.findViewById(R.id.tags_recyclerView)
+        coordinatorLayout = view.findViewById(R.id.coordinatorLayout)
+        descriptionTextView = view.findViewById(R.id.description_textView)
+        framesRecyclerView = view.findViewById(R.id.frames_recyclerView)
+
+        setupRecyclerViews()
 
         return view
     }
@@ -75,6 +91,19 @@ class MovieScreenFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setupRecyclerViews() {
+        //tags
+        tagsRecyclerView.layoutManager = StaggeredGridLayoutManager(
+            2, StaggeredGridLayoutManager.HORIZONTAL)
+        tagsRecyclerView.adapter = TagsAdapter(listOf())
+        //frames
+        framesRecyclerView.layoutManager = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.HORIZONTAL,
+            false)
+        framesRecyclerView.adapter = FramesAdapter(listOf())
     }
 
     private fun updateUI(movieInfo: MovieInfo) {
@@ -105,6 +134,12 @@ class MovieScreenFragment : Fragment() {
             }
         }
         toolBar.menu.findItem(R.id.comments).setIcon(R.drawable.ic_messages)
+        //tagsRecyclerView
+        tagsRecyclerView.adapter = TagsAdapter(movieInfo.tags)
+        //descriptionTextView
+        descriptionTextView.text = movieInfo.description
+        //framesRecyclerView
+        framesRecyclerView.adapter = FramesAdapter(movieInfo.images)
     }
 
     private fun setToolBar() {
