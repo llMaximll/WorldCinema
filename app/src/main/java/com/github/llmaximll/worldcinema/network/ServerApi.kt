@@ -1,5 +1,6 @@
 package com.github.llmaximll.worldcinema.network
 
+import com.github.llmaximll.worldcinema.dataclasses.network.EpisodeInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.MovieInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.PosterInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.SignInDC
@@ -37,4 +38,8 @@ interface ServerApi {
     @GET("movies/{movieId}")
     fun downloadInfoRequiredMovie(@Path("movieId") movieId: String):
             Call<MovieInfo>
+
+    @GET("movies/{movieId}/episodes")
+    fun downloadInfoEpisodesRequiredMovie(@Path("movieId") movieId: String):
+            Call<List<EpisodeInfo>>
 }

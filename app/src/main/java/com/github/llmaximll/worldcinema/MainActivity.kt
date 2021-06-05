@@ -111,6 +111,12 @@ class MainActivity : AppCompatActivity(),
         supportFragmentManager
             .beginTransaction()
             .addToBackStack(null)
+            .setCustomAnimations(
+                android.R.anim.fade_in,
+                android.R.anim.fade_out,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out,
+            )
             .replace(R.id.container_fragment, fragment)
             .commit()
     }

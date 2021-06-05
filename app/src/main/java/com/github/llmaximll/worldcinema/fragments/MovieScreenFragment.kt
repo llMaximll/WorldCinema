@@ -1,14 +1,18 @@
 package com.github.llmaximll.worldcinema.fragments
 
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.MediaController
 import android.widget.TextView
+import android.widget.VideoView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,9 +20,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.github.llmaximll.worldcinema.R
+import com.github.llmaximll.worldcinema.adaptersholders.recyclerview.EpisodesAdapter
 import com.github.llmaximll.worldcinema.adaptersholders.recyclerview.FramesAdapter
 import com.github.llmaximll.worldcinema.adaptersholders.recyclerview.TagsAdapter
 import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.dataclasses.network.EpisodeInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.MovieInfo
 import com.github.llmaximll.worldcinema.vm.MovieScreenVM
 import com.google.android.material.appbar.MaterialToolbar
@@ -39,7 +45,12 @@ class MovieScreenFragment : Fragment() {
     private lateinit var tagsRecyclerView: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
     private lateinit var descriptionTextView: TextView
+    private lateinit var framesTextView: TextView
     private lateinit var framesRecyclerView: RecyclerView
+    private lateinit var episodesRecyclerView: RecyclerView
+    private lateinit var episodesTextView: TextView
+    private lateinit var videoTextView: TextView
+    private lateinit var videoView: VideoView
     private var movieId: String = "movieId=null"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +77,12 @@ class MovieScreenFragment : Fragment() {
         tagsRecyclerView = view.findViewById(R.id.tags_recyclerView)
         coordinatorLayout = view.findViewById(R.id.coordinatorLayout)
         descriptionTextView = view.findViewById(R.id.description_textView)
+        framesTextView = view.findViewById(R.id.frames_textView)
         framesRecyclerView = view.findViewById(R.id.frames_recyclerView)
+        episodesTextView = view.findViewById(R.id.episodes_textView)
+        episodesRecyclerView = view.findViewById(R.id.episodes_recyclerView)
+        videoTextView = view.findViewById(R.id.video_textView)
+        videoView = view.findViewById(R.id.videoView)
 
         setupRecyclerViews()
 
@@ -77,6 +93,7 @@ class MovieScreenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setToolBar()
         downloadInfoRequiredMovie(movieId)
+        downloadInfoEpisodesRequiredMovie(movieId)
     }
 
     private fun downloadInfoRequiredMovie(movieId: String) {
@@ -93,6 +110,35 @@ class MovieScreenFragment : Fragment() {
         }
     }
 
+    private fun downloadInfoEpisodesRequiredMovie(movieId: String) {
+        viewModel.downloadInfoEpisodesRequiredMovie(movieId)
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.episodeInfo.collect { listEpisodesInfo ->
+                if (listEpisodesInfo != null && listEpisodesInfo.isNotEmpty()) {
+                    updateEpisodesRecycler(listEpisodesInfo)
+                    episodesTextView.isVisible = true
+                    episodesRecyclerView.isVisible = true
+                    setVideoView(listEpisodesInfo[0].preview)
+                    cf.log(TAG, "downloadInfoEpisodesRequiredMovie | " +
+                            "listEpisodesInfo=$listEpisodesInfo")
+                } else {
+                    cf.log(TAG, "downloadInfoEpisodesRequiredMovie | " +
+                            "listEpisodesInfo = null")
+                }
+            }
+        }
+    }
+
+    private fun setVideoView(preview: String) {
+        //videoView
+        val videoURI = "http://cinema.areas.su/up/video/$preview"
+        videoView.setVideoURI(Uri.parse(videoURI))
+        videoView.setMediaController(MediaController(videoView.context))
+        videoTextView.isVisible = true
+        videoView.isVisible = true
+        videoView.start()
+    }
+
     private fun setupRecyclerViews() {
         //tags
         tagsRecyclerView.layoutManager = StaggeredGridLayoutManager(
@@ -104,6 +150,9 @@ class MovieScreenFragment : Fragment() {
             LinearLayoutManager.HORIZONTAL,
             false)
         framesRecyclerView.adapter = FramesAdapter(listOf())
+        //episodes
+        episodesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        episodesRecyclerView.adapter = EpisodesAdapter(listOf())
     }
 
     private fun updateUI(movieInfo: MovieInfo) {
@@ -139,7 +188,15 @@ class MovieScreenFragment : Fragment() {
         //descriptionTextView
         descriptionTextView.text = movieInfo.description
         //framesRecyclerView
-        framesRecyclerView.adapter = FramesAdapter(movieInfo.images)
+        if (movieInfo.images.isNotEmpty()) {
+            framesRecyclerView.adapter = FramesAdapter(movieInfo.images)
+            framesTextView.isVisible = true
+            framesRecyclerView.isVisible = true
+        }
+    }
+
+    private fun updateEpisodesRecycler(listEpisodesInfo: List<EpisodeInfo>) {
+        episodesRecyclerView.adapter = EpisodesAdapter(listEpisodesInfo)
     }
 
     private fun setToolBar() {

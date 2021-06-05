@@ -2,6 +2,7 @@ package com.github.llmaximll.worldcinema.repositories
 
 import android.content.Context
 import com.github.llmaximll.worldcinema.common.CommonFunctions
+import com.github.llmaximll.worldcinema.dataclasses.network.EpisodeInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.MovieInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.PosterInfo
 import com.github.llmaximll.worldcinema.dataclasses.network.SignInDC
@@ -172,6 +173,33 @@ class CinemaRepository private constructor(context: Context) {
                         }
                     }
                     override fun onFailure(call: Call<MovieInfo>?, t: Throwable?) {
+                        cont.resume(null)
+                        cf.log(TAG, "result=$t")
+                    }
+                })
+        }
+    }
+
+    suspend fun downloadInfoEpisodesRequiredMovie(movieId: String): List<EpisodeInfo>? {
+        return suspendCoroutine { cont ->
+            NetworkService
+                .getInstance(null)
+                ?.getJsonApi()
+                ?.downloadInfoEpisodesRequiredMovie(movieId)
+                ?.enqueue(object : Callback<List<EpisodeInfo>> {
+                    override fun onResponse(
+                        call: Call<List<EpisodeInfo>>?,
+                        response: Response<List<EpisodeInfo>>?
+                    ) {
+                        if (response?.isSuccessful == true) {
+                            cont.resume(response.body())
+                        }
+                        if (response?.isSuccessful != true) {
+                            cont.resume(null)
+                            cf.log(TAG, "response=${response?.body()}")
+                        }
+                    }
+                    override fun onFailure(call: Call<List<EpisodeInfo>>?, t: Throwable?) {
                         cont.resume(null)
                         cf.log(TAG, "result=$t")
                     }
